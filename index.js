@@ -24,8 +24,8 @@ function sim_step(agents, trail, width, height) {
 		for (let agent of agents) {
 			function sense_relative_angle(theta) {
 				return trail[index(
-					Math.round(agent.x + Math.sin(agent.heading + theta) * sensor_distance),
-					Math.round(agent.y + Math.cos(agent.heading + theta) * sensor_distance)
+					Math.round(agent.x + Math.cos(agent.heading + theta) * sensor_distance),
+					Math.round(agent.y + Math.sin(agent.heading + theta) * sensor_distance)
 				)];
 			}
 
