@@ -166,4 +166,12 @@ onload = function() {
 	}
 
 	next_frame();
+
+	skip = function(num_frames) {
+		for (var i=0; i<num_frames; ++i) {
+			trail = sim_step(agents, trail, width, height);
+		}
+	}
 }
+
+var skip = function() {} // changed elsewhere
