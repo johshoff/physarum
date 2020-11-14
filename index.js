@@ -9,6 +9,7 @@ const sensor_angle = 40/180*Math.PI; // radians
 const turning_speed = sensor_angle;
 const deposit_amount = 0.6;
 const wrap_around = true;
+const start_in_circle = false; // otherwise start randomly
 // use a Gaussian kernel for diffusion
 const weight = [
 	1/16, 1/8, 1/16,
@@ -136,12 +137,24 @@ onload = function() {
 	const height = canvas.height;
 
 	const agents = [];
-	for (let i=0; i<num_agents; ++i) {
-		agents.push({
-			x: Math.random() * width,
-			y: Math.random() * height,
-			heading: Math.random() * 2 * Math.PI, // radians
-		});
+	if (start_in_circle) {
+		const radius = Math.min(width, height) * 0.2;
+		for (let i=0; i<num_agents; ++i) {
+			const t = 2 * Math.PI*i/num_agents;
+			agents.push({
+				x: Math.cos(t) * radius + width / 2,
+				y: Math.sin(t) * radius + height / 2,
+				heading: t - Math.PI / 2,
+			});
+		}
+	} else {
+		for (let i=0; i<num_agents; ++i) {
+			agents.push({
+				x: Math.random() * width,
+				y: Math.random() * height,
+				heading: Math.random() * 2 * Math.PI, // radians
+			});
+		}
 	}
 
 	let trail = new Float32Array(width * height);
