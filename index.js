@@ -1,6 +1,7 @@
 'use strict';
 
 const num_agents = 10000;
+const highlight_agents = false;
 const speed = 1.0;
 const decay_factor = 0.99;
 const sensor_distance = 1.5;
@@ -94,22 +95,31 @@ function sim_step(agents, trail, width, height) {
 	return trail;
 }
 
-function render(trail, canvas) {
+function render(trail, canvas, agents) {
 	const width = canvas.width;
 	const height = canvas.height;
 	const ctx = canvas.getContext('2d');
 	const trail_image = ctx.getImageData(0, 0, width, height);
 
+	const max_brightness = highlight_agents ? 128 : 255;
 	let i = 0;
 	for (let y=0; y<height; ++y) {
 		for (let x=0; x<width; ++x) {
 			const value = trail[i];
-			const brightness = Math.floor(value * 255);
+			const brightness = Math.floor(value * max_brightness);
 			trail_image.data[i*4+0] = brightness;
 			trail_image.data[i*4+1] = brightness;
 			trail_image.data[i*4+2] = brightness;
 			trail_image.data[i*4+3] = 255;
 			i++;
+		}
+	}
+	if (highlight_agents) {
+		for (let agent of agents) {
+			trail_image.data[(Math.floor(agent.x)+Math.floor(agent.y)*width)*4+0] = 255;
+			trail_image.data[(Math.floor(agent.x)+Math.floor(agent.y)*width)*4+1] = 0;
+			trail_image.data[(Math.floor(agent.x)+Math.floor(agent.y)*width)*4+2] = 0;
+			trail_image.data[(Math.floor(agent.x)+Math.floor(agent.y)*width)*4+3] = 255;
 		}
 	}
 	ctx.putImageData(trail_image, 0, 0);
@@ -133,7 +143,7 @@ onload = function() {
 
 	function next_frame() {
 		trail = sim_step(agents, trail, width, height);
-		render(trail, canvas);
+		render(trail, canvas, agents);
 		window.requestAnimationFrame(next_frame);
 	}
 
