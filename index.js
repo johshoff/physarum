@@ -67,15 +67,15 @@ function sim_step(agents, trail, width, height) {
 		for (let y=1; y<height-1; ++y) {
 			for (let x=1; x<width-1; ++x) {
 				const diffused_value = (
-					trail[index(x-1, y-1)] * weight[0] +
-					trail[index(x  , y-1)] * weight[1] +
-					trail[index(x+1, y-1)] * weight[2] +
-					trail[index(x-1, y  )] * weight[3] +
-					trail[index(x  , y  )] * weight[4] +
-					trail[index(x+1, y  )] * weight[5] +
-					trail[index(x-1, y+1)] * weight[6] +
-					trail[index(x  , y+1)] * weight[7] +
-					trail[index(x+1, y+1)] * weight[8]
+					old_trail[index(x-1, y-1)] * weight[0] +
+					old_trail[index(x  , y-1)] * weight[1] +
+					old_trail[index(x+1, y-1)] * weight[2] +
+					old_trail[index(x-1, y  )] * weight[3] +
+					old_trail[index(x  , y  )] * weight[4] +
+					old_trail[index(x+1, y  )] * weight[5] +
+					old_trail[index(x-1, y+1)] * weight[6] +
+					old_trail[index(x  , y+1)] * weight[7] +
+					old_trail[index(x+1, y+1)] * weight[8]
 				);
 
 				trail[index(x, y)] = Math.min(1.0, diffused_value * decay_factor);
