@@ -1,6 +1,6 @@
 'use strict';
 
-const num_agents = 10000;
+const num_agents = 5000;
 const highlight_agents = false;
 const show_stats = false;
 const speed = 1.0;
