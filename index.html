@@ -46,12 +46,12 @@ div.settings input { text-align:left; }
     <span id='text_deposit_amount'></span>
 
     <label for='num_agents'>Number of agents</label>
-    <input id='num_agents' type='range' min=1 max=100000 step=1 onchange='regenerate_next=true'></input>
+    <input id='num_agents' type='range' min=1 max=50000 step=1 onchange='regenerate_next=true'></input>
     <span id='text_num_agents'></span>
 
     <label for='start_in_circle'>Start in circle</label>
     <input id='start_in_circle' type='checkbox' onchange='regenerate_next=true'></input>
-    <span><button onclick='regenerate()'>Regenerate</button></span>
+    <span></span>
 
     <label for='highlight_agents'>Highlight agents</label>
     <input id='highlight_agents' type='checkbox'></input>
@@ -68,6 +68,8 @@ div.settings input { text-align:left; }
     <label for='show_debug'>Show debug</label>
     <input id='show_debug' type='checkbox'></input>
     <span></span>
+
+    <button id='reset_button' onclick='reset_settings()'>Reset all</button>
 	</div>
 </div>
 <div id='debug' style='display: none'>

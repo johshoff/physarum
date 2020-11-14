@@ -30,6 +30,11 @@ const weight = [
 let counts = [0,0,0,0];
 let regenerate_next = true;
 
+const default_settings = {};
+for (const [key, value] of Object.entries(settings)) {
+	default_settings[key] = value;
+}
+
 // convert radians to degrees
 function rad_to_deg(value) {
 	return Math.round(value * 180 / Math.PI);
@@ -177,6 +182,36 @@ function update_settings_text() {
 	}
 }
 
+// get settings from query string
+function settings_from_query_string() {
+	for (const [name, value] of (new URL(document.location)).searchParams) {
+		if (name in settings) {
+			if (typeof(settings[name]) == 'number') {
+				settings[name] = parseFloat(value);
+			} else {
+				settings[name] = value == 'true';
+			}
+		}
+	}
+}
+// update query string with non-default settings
+function settings_to_query_string() {
+	const params = (new URL(document.location)).searchParams;
+	const before = params.toString();
+	for (const [key, value] of Object.entries(settings)) {
+		if (value != default_settings[key]) {
+			params.set(key, value);
+		} else {
+			params.delete(key);
+		}
+	}
+
+	const url = new URL(document.location);
+	if (params.toString() !== before) {
+		url.search = '?'+params.toString();
+		window.history.replaceState({},'',url);
+	}
+}
 // store settings from settings object to DOM
 function settings_to_dom() {
 	for (let name in settings) {
@@ -201,8 +236,26 @@ function settings_from_dom() {
 	}
 	update_settings_text();
 }
+function reset_settings() {
+	for (name in settings) {
+		settings[name] = default_settings[name];
+	}
+	settings_to_dom();
+}
+function update_reset_button_enabled() {
+	let any_non_default = false;
+	for (let name in settings) {
+		if (settings[name] != default_settings[name]) {
+			any_non_default = true;
+			break;
+		}
+	}
+
+	document.getElementById('reset_button').disabled = !any_non_default;
+}
 
 onload = function() {
+	settings_from_query_string();
 	settings_to_dom();
 	const canvas = document.getElementById('simcanvas');
 	const width = canvas.width;
@@ -238,6 +291,8 @@ onload = function() {
 
 	function next_frame() {
 		settings_from_dom();
+		settings_to_query_string();
+		update_reset_button_enabled();
 		if (regenerate_next) {
 			regenerate();
 		}
