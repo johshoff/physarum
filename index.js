@@ -7,6 +7,7 @@ const decay_factor = 0.95;
 const sensor_distance = 2;
 const sensor_angle = 40/180*Math.PI; // radians
 const turning_speed = sensor_angle;
+const random_turning = false; // randomly turn within the limits of turning_speed
 const deposit_amount = 0.6;
 const wrap_around = true;
 const start_in_circle = false; // otherwise start randomly
@@ -36,12 +37,13 @@ function sim_step(agents, trail, width, height) {
 			const sense_middle = sense_relative_angle(0);
 			const sense_right  = sense_relative_angle(-sensor_angle);
 
+			const modified_turning = (random_turning ? (Math.random() * 0.5 + 0.5) : 1) * turning_speed;
 			if (sense_middle > sense_left && sense_middle > sense_right) {
 				// no change
 			} else if (sense_left > sense_right) {
-				agent.heading += turning_speed;
+				agent.heading += modified_turning;
 			} else if (sense_right > sense_left) {
-				agent.heading -= turning_speed;
+				agent.heading -= modified_turning;
 			} else {
 				agent.heading += (Math.random() * 2 - 1) * turning_speed;
 			}
