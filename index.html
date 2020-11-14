@@ -1,9 +1,78 @@
 <!DOCTYPE html>
 <title>Slime mold</title>
 <script src='index.js'></script>
+<!--script src='https://unpkg.com/vue@3.0.2'></script-->
+<style>
+div.main {
+  display:inline-grid;
+  grid-template-columns: max-content max-content;
+  grid-gap:5px;
+  align-items: start;
+}
+div.settings {
+  display:grid;
+  grid-template-columns: max-content max-content max-content;
+  grid-gap:5px;
+}
+div.settings label { text-align:right; }
+div.settings input { text-align:left; }
+</style>
 <body>
-<canvas id='simcanvas' width=400 height=400></canvas>
+<div class='main'>
+	<canvas id='simcanvas' width=400 height=400></canvas>
+	<div class='settings'>
+    <label for='sensor_distance'>Sensor distance</label>
+    <input id='sensor_distance' type='range' min=0 max=5 step=any></input>
+    <span id='text_sensor_distance'></span>
+
+    <label for='sensor_angle'>Sensor angle</label>
+    <input id='sensor_angle' type='range' min=0 max=3.14 step=any></input>
+    <span id='text_sensor_angle'></span>
+
+    <label for='turning_speed'>Turning speed</label>
+    <input id='turning_speed' type='range' min=0 max=3.14 step=any></input>
+    <span id='text_turning_speed'></span>
+
+    <label for='speed'>Speed</label>
+    <input id='speed' type='range' min=0 max=5 step=any></input>
+    <span id='text_speed'></span>
+
+    <label for='decay_factor'>Decay factor</label>
+    <input id='decay_factor' type='range' min=0 max=1 step=any></input>
+    <span id='text_decay_factor'></span>
+
+    <label for='deposit_amount'>Deposit amount</label>
+    <input id='deposit_amount' type='range' min=0 max=1 step=any></input>
+    <span id='text_deposit_amount'></span>
+
+    <label for='num_agents'>Number of agents</label>
+    <input id='num_agents' type='range' min=1 max=100000 step=1 onchange='regenerate_next=true'></input>
+    <span id='text_num_agents'></span>
+
+    <label for='start_in_circle'>Start in circle</label>
+    <input id='start_in_circle' type='checkbox' onchange='regenerate_next=true'></input>
+    <span><button onclick='regenerate()'>Regenerate</button></span>
+
+    <label for='highlight_agents'>Highlight agents</label>
+    <input id='highlight_agents' type='checkbox'></input>
+    <span></span>
+
+    <label for='random_turning'>Semi-random turning</label>
+    <input id='random_turning' type='checkbox'></input>
+    <span></span>
+
+    <label for='wrap_around'>Wrap around</label>
+    <input id='wrap_around' type='checkbox'></input>
+    <span></span>
+
+    <label for='show_debug'>Show debug</label>
+    <input id='show_debug' type='checkbox'></input>
+    <span></span>
+	</div>
+</div>
+<div id='debug' style='display: none'>
 <div><button onclick='skip(60)'>Skip ahead 60 frames</button></div>
 <div><button onclick='skip(600)'>Skip ahead 600 frames</button></div>
 <div id=stats></div>
+</div>
 <div>Code on <a href='https://github.com/johshoff/physarum'>github</a></div>
