@@ -8,6 +8,7 @@ const sensor_distance = 2;
 const sensor_angle = 40/180*Math.PI; // radians
 const turning_speed = sensor_angle;
 const deposit_amount = 0.6;
+const wrap_around = true;
 // use a Gaussian kernel for diffusion
 const weight = [
 	1/16, 1/8, 1/16,
@@ -50,6 +51,10 @@ function sim_step(agents, trail, width, height) {
 		for (let agent of agents) {
 			agent.x += speed * Math.cos(agent.heading);
 			agent.y += speed * Math.sin(agent.heading);
+			if (wrap_around) {
+				agent.x = (agent.x + width) % width;
+				agent.y = (agent.y + height) % height;
+			}
 		}
 	}
 
