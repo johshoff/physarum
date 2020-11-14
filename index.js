@@ -2,6 +2,7 @@
 
 const num_agents = 10000;
 const highlight_agents = false;
+const show_stats = false;
 const speed = 1.0;
 const decay_factor = 0.95;
 const sensor_distance = 2;
@@ -17,6 +18,7 @@ const weight = [
 	 1/8, 1/4,  1/8,
 	1/16, 1/8, 1/16,
 ];
+let counts = [0,0,0,0];
 
 // Update the state in place
 function sim_step(agents, trail, width, height) {
@@ -38,15 +40,22 @@ function sim_step(agents, trail, width, height) {
 			const sense_right  = sense_relative_angle(-sensor_angle);
 
 			const modified_turning = (random_turning ? (Math.random() * 0.5 + 0.5) : 1) * turning_speed;
+			let option = -1;
 			if (sense_middle > sense_left && sense_middle > sense_right) {
 				// no change
+				option = 0;
 			} else if (sense_left > sense_right) {
+				option = 1;
 				agent.heading += modified_turning;
 			} else if (sense_right > sense_left) {
+				option = 2;
 				agent.heading -= modified_turning;
 			} else {
-				agent.heading += (Math.random() * 2 - 1) * turning_speed;
+				option = 3;
+				agent.heading += Math.round(Math.random() * 2 - 1) * turning_speed;
 			}
+			counts[option] += 1
+			agent.last_option = option;
 		}
 	}
 
@@ -124,10 +133,16 @@ function render(trail, canvas, agents) {
 	}
 	if (highlight_agents) {
 		for (let agent of agents) {
-			trail_image.data[(Math.floor(agent.x)+Math.floor(agent.y)*width)*4+0] = 255;
-			trail_image.data[(Math.floor(agent.x)+Math.floor(agent.y)*width)*4+1] = 0;
-			trail_image.data[(Math.floor(agent.x)+Math.floor(agent.y)*width)*4+2] = 0;
-			trail_image.data[(Math.floor(agent.x)+Math.floor(agent.y)*width)*4+3] = 255;
+			let color = [0,0,0];
+			switch (agent.last_option) {
+				case 0: color = [100,  0,  0]; break; // straight
+				case 1: color = [  0,100,  0]; break; // right
+				case 2: color = [  0,  0,100]; break; // left
+				case 3: color = [255,255,255]; break; // indecisive
+			}
+			trail_image.data[(Math.floor(agent.x)+Math.floor(agent.y)*width)*4+0] = color[0];
+			trail_image.data[(Math.floor(agent.x)+Math.floor(agent.y)*width)*4+1] = color[1];
+			trail_image.data[(Math.floor(agent.x)+Math.floor(agent.y)*width)*4+2] = color[2];
 		}
 	}
 	ctx.putImageData(trail_image, 0, 0);
@@ -165,6 +180,18 @@ onload = function() {
 		trail = sim_step(agents, trail, width, height);
 		render(trail, canvas, agents);
 		window.requestAnimationFrame(next_frame);
+
+		if (show_stats) {
+			let sum = 0;
+			for (let c of counts) {
+				sum += c;
+			}
+			let t = 'Straight, right, left, random: '
+			for (let c of counts) {
+				t += Math.round(c/sum*100)+'%, ';
+			}
+			stats.innerText = t;
+		}
 	}
 
 	next_frame();
