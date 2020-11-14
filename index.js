@@ -4,8 +4,8 @@ const num_agents = 10000;
 const speed = 1.0;
 const decay_factor = 0.99;
 const sensor_distance = 1.5;
-const sensor_angle = 40/360; // radians
-const turning_speed = sensor_angle * 0.02;
+const sensor_angle = 40/180*Math.PI; // radians
+const turning_speed = sensor_angle;
 const deposit_amount = 0.6;
 // use a Gaussian kernel for diffusion
 const weight = [
