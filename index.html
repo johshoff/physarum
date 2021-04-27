@@ -4,22 +4,32 @@
 <!--script src='https://unpkg.com/vue@3.0.2'></script-->
 <style>
 div.main {
-  display:inline-grid;
-  grid-template-columns: max-content max-content;
-  grid-gap:5px;
-  align-items: start;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  border: none;
 }
 div.settings {
+  position:absolute;
+  top: 0px;
+  left: 0px;
   display:grid;
   grid-template-columns: max-content max-content max-content;
   grid-gap:5px;
+  background-color: white;
+  padding: 15px;
+  border-radius: 5px;
+}
+body {
+    margin: 0 !important;
+    padding: 0 !important;
 }
 div.settings label { text-align:right; }
 div.settings input { text-align:left; }
 </style>
 <body>
-<div class='main'>
-	<canvas id='simcanvas' width=400 height=400></canvas>
+<div class="main" >
+	<canvas id='simcanvas'></canvas>
 	<div class='settings'>
     <label for='sensor_distance'>Sensor distance</label>
     <input id='sensor_distance' type='range' min=0 max=5 step=any></input>
@@ -68,6 +78,8 @@ div.settings input { text-align:left; }
     <label for='show_debug'>Show debug</label>
     <input id='show_debug' type='checkbox'></input>
     <span></span>
+
+    <button id='save_settings' onclick='saveSettings()'>Save settings</button>
 
     <button id='reset_button' onclick='reset_settings()'>Reset all</button>
 	</div>
