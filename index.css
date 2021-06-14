@@ -1,0 +1,11 @@
+div.main {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  border: none;
+}
+body {
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden;
+}
