@@ -8,7 +8,7 @@ let trail = new Float32Array(width * height);
 
 // config
 const settings = {
-  AGENT_SPEED: 0.5,
+  AGENT_SPEED: 2,
   regenerate_agents: true,
   DIFFUSSION_WEIGHTS: [
     1 / 9,
@@ -21,11 +21,18 @@ const settings = {
     1 / 9,
     1 / 9,
   ],
-  DEPOSIT_AMOUNT: 1,
+  DEPOSIT_AMOUNT: 10,
+  DECAY_FACTOR: 0.9,
 };
 
 //helpers
-function index(x, y) {
+function index(raw_x, raw_y) {
+  let x = raw_x;
+  let y = raw_y;
+  if (x <= 0) x += width;
+  if (x >= width) x -= width;
+  if (y <= 0) y += height;
+  if (y >= height) y -= height;
   return x + y * width;
 }
 
@@ -54,10 +61,10 @@ onload = function () {
       agent.x += settings.AGENT_SPEED * Math.sin(agent.angle);
       agent.y += settings.AGENT_SPEED * Math.cos(agent.angle);
       // add periodic boundary conditions
-      if (agent.x < 0) agent.x += width;
-      if (agent.x > width) agent.x = 0;
-      if (agent.y < 0) agent.y += height;
-      if (agent.y > height) agent.y = 0;
+      if (agent.x <= 0) agent.x += width;
+      if (agent.x >= width) agent.x -= width;
+      if (agent.y <= 0) agent.y += height;
+      if (agent.y >= height) agent.y -= height;
     }
   }
 
@@ -65,7 +72,27 @@ onload = function () {
     for (let agent of agents) {
       const x = Math.round(agent.x);
       const y = Math.round(agent.y);
-      trail[index(x, y)] = settings.DEPOSIT_AMOUNT;
+      trail[index(x, y)] += settings.DEPOSIT_AMOUNT;
+    }
+  }
+
+  function diffuse_and_decay() {
+    const old_trail = Float32Array.from(trail);
+    for (let y = 0; y < height; ++y) {
+      for (let x = 0; x <= width; ++x) {
+        const diffused_value =
+          old_trail[index(x - 1, y - 1)] * settings.DIFFUSSION_WEIGHTS[0] +
+          old_trail[index(x, y - 1)] * settings.DIFFUSSION_WEIGHTS[1] +
+          old_trail[index(x + 1, y - 1)] * settings.DIFFUSSION_WEIGHTS[2] +
+          old_trail[index(x - 1, y)] * settings.DIFFUSSION_WEIGHTS[3] +
+          old_trail[index(x, y)] * settings.DIFFUSSION_WEIGHTS[4] +
+          old_trail[index(x + 1, y)] * settings.DIFFUSSION_WEIGHTS[5] +
+          old_trail[index(x - 1, y + 1)] * settings.DIFFUSSION_WEIGHTS[6] +
+          old_trail[index(x, y + 1)] * settings.DIFFUSSION_WEIGHTS[7] +
+          old_trail[index(x + 1, y + 1)] * settings.DIFFUSSION_WEIGHTS[8];
+
+        trail[index(x, y)] = diffused_value * settings.DECAY_FACTOR;
+      }
     }
   }
 
@@ -107,6 +134,7 @@ onload = function () {
     }
     move_agents();
     deposit();
+    diffuse_and_decay();
     render(canvas, agents);
 
     window.requestAnimationFrame(next_frame);
